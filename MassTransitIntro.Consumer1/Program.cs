@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using MassTransit.ActiveMqTransport;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
@@ -16,16 +17,22 @@ namespace MassTransitIntro.Consumer1
         static async Task Main()
         {
             var emailSender = new FakeEmailSender();
-            
-            var bus = Bus.Factory.CreateUsingAmazonSqs(cfg =>
+
+            var bus = Bus.Factory.CreateUsingActiveMq(cfg =>
             {
-                cfg.Host(Configuration["AmazonSqs:Region"], host =>
+                var useSsl = bool.Parse(Configuration["ActiveMQ:UseSsl"]);
+                cfg.Host(Configuration["ActiveMQ:Host"], host =>
                 {
-                    host.AccessKey(Configuration["AmazonSqs:AccessKey"]);
-                    host.SecretKey(Configuration["AmazonSqs:SecretKey"]);
+                    host.Username(Configuration["ActiveMQ:Username"]);
+                    host.Password(Configuration["ActiveMQ:Password"]);
+
+                    if (useSsl)
+                    {
+                        host.UseSsl();
+                    }
                 });
 
-                cfg.ReceiveEndpoint(Configuration["AmazonSqs:Queue"], endpoint =>
+                cfg.ReceiveEndpoint(Configuration["ActiveMQ:Queue"], endpoint =>
                 {
                     endpoint.Consumer(() => new MeetingCreatedMessageConsumer(emailSender));
                 });
