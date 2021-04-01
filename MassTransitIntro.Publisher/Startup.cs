@@ -20,12 +20,12 @@ namespace MassTransitIntro.Publisher
         {
             services.AddRazorPages();
 
-            var bus = Bus.Factory.CreateUsingAmazonSqs(cfg =>
+            var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
-                cfg.Host(Configuration["AmazonSqs:Region"], host =>
+                cfg.Host(Configuration["RabbitMQ:Host"], host =>
                 {
-                    host.AccessKey(Configuration["AmazonSqs:AccessKey"]);
-                    host.SecretKey(Configuration["AmazonSqs:SecretKey"]);
+                    host.Username(Configuration["RabbitMQ:Username"]);
+                    host.Password(Configuration["RabbitMQ:Password"]);
                 });
             });
 

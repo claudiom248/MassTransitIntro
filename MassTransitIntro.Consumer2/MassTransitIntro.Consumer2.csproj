@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="MassTransit" Version="7.1.7" />
-    <PackageReference Include="MassTransit.AmazonSQS" Version="7.1.7" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
   </ItemGroup>
 
