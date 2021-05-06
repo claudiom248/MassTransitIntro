@@ -20,13 +20,9 @@ namespace MassTransitIntro.Publisher
         {
             services.AddRazorPages();
 
-            var bus = Bus.Factory.CreateUsingAmazonSqs(cfg =>
+            var bus = Bus.Factory.CreateUsingAzureServiceBus(cfg =>
             {
-                cfg.Host(Configuration["AmazonSqs:Region"], host =>
-                {
-                    host.AccessKey(Configuration["AmazonSqs:AccessKey"]);
-                    host.SecretKey(Configuration["AmazonSqs:SecretKey"]);
-                });
+                cfg.Host(Configuration["AzureServiceBus:ConnectionString"]);
             });
 
             services.AddSingleton<IBus>(bus);
@@ -55,7 +51,7 @@ namespace MassTransitIntro.Publisher
                 endpoints.MapRazorPages();
             });
 
-            var bus = app.ApplicationServices.GetService<IBus>() as IBusControl;
+            var bus = app.ApplicationServices.GetRequiredService<IBus>() as IBusControl;
             applicationLifetime.ApplicationStarted.Register(async () => { await bus.StartAsync(); });
             applicationLifetime.ApplicationStopped.Register(async () => { await bus.StopAsync(); });
         }

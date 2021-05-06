@@ -17,15 +17,11 @@ namespace MassTransitIntro.Consumer1
         {
             var emailSender = new FakeEmailSender();
             
-            var bus = Bus.Factory.CreateUsingAmazonSqs(cfg =>
+            var bus = Bus.Factory.CreateUsingAzureServiceBus(cfg =>
             {
-                cfg.Host(Configuration["AmazonSqs:Region"], host =>
-                {
-                    host.AccessKey(Configuration["AmazonSqs:AccessKey"]);
-                    host.SecretKey(Configuration["AmazonSqs:SecretKey"]);
-                });
+                cfg.Host(Configuration["AzureServiceBus:ConnectionString"]);
 
-                cfg.ReceiveEndpoint(Configuration["AmazonSqs:Queue"], endpoint =>
+                cfg.ReceiveEndpoint(Configuration["AzureServiceBus:Queue"], endpoint =>
                 {
                     endpoint.Consumer(() => new MeetingCreatedMessageConsumer(emailSender));
                 });
